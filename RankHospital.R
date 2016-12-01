@@ -32,25 +32,14 @@ rankhospital <- function(which_state, outcome, num = "best") {
   hospdb3 <- subset(hospdb2,State == which_state,select=c(column_names))
   hospdbfinal <- hospdb3[hospdb3[,3]!="Not Available",]
   hospdbfinal <- hospdbfinal[order(hospdbfinal[,3],hospdbfinal[,1]),]
+  hospdbfinal <- hospdbfinal[complete.cases(hospdbfinal),]
   
-  Ranking <- vector()
-  for (i in 1:length(hospdbfinal[,3])){
-    Ranking[i] <- c(i)
-  }
-  hospdbfinal <- data.frame(cbind(hospdbfinal,Ranking))
-
-  ## Return hospital name in that state with the given rank 30-day death rate  
-  if (num =="best" | num ==1){
-    hospital_name <- subset(hospdbfinal,hospdbfinal[,4]==1,1)
-    hospital_name 
-  } else if (num == "worst"){
-    hospital_name <- subset(hospdbfinal,hospdbfinal[,4]==max(Ranking),1)
-    hospital_name
-  } else if (num > length(Ranking)){
-    stop("NA")
-  } else 
-    hospital_name <- subset(hospdbfinal,hospdbfinal[,4]==num,1)
-    hospital_name
+  
+  ## Return hospital name in that state with the given rank 30-day death rate    
+  if (num =="best" | num ==1){hospdbfinal[1,1]}
+  else if (num == "worst"){hospdbfinal[nrow(hospdbfinal),1]}
+  else if (num > length(hospdbfinal[,1])){stop("NA")} 
+  else hospdbfinal[num,1]
 }
 
 # Testing responses
